@@ -31,7 +31,7 @@ The API consists of 3 main endpoints:
 
 2. Clone the project directory into a location on the host machine
 
-``git clone https://....``
+``git clone https://github.com/AlbertBuluma/HRMS-API .``
 
 3. Create and configure the project env file
 
