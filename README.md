@@ -199,3 +199,28 @@ DB_PASSWORD=your-database-password
    ``php artisan key:generate
    ``
 
+### How to view or monitor API incoming and outgoing API requests 
+Laravel Telescope is installed in this application to monitor incoming and outgoing API requests, as well as other system activities like logs, exceptions, and database queries.
+
+#### 1. Accessing the Telescope Dashboard
+   To access the Telescope dashboard, follow these steps: \
+   Open your browser and navigate to the following URL: \
+`` http://<APP_URL>:<APP_PORT>/telescope``\
+   Replace your-app-url with the actual URL where your application is hosted (e.g., http://localhost:8020/telescope for local development).
+#### 2. **Authorization to Access Telescope**
+   The Telescope dashboard is restricted to authorized users. By default, access is limited to the local environment (i.e., APP_ENV=local). If you need to allow other environments (such as production or staging) to access Telescope, you can modify the configuration in config/telescope.php: \
+``'enabled' => env('TELESCOPE_ENABLED', true), 
+`` \
+   Make sure to restrict access carefully using IP whitelisting or user-based authorization.
+
+#### 3. Viewing Incoming API Requests
+   Once you access the Telescope dashboard, follow these steps to view incoming API requests:
+
+On the left-hand menu, click on "**Requests**".
+Here, you will see a list of all incoming HTTP requests, including API requests. You can inspect the request details such as URL, method, headers, body, and response.
+#### 4. Viewing Outgoing API Requests
+   To monitor outgoing API requests made by the application:
+
+In the Telescope dashboard, click on "**HTTP Client**" from the menu.
+This section will show all outgoing HTTP requests made by the application via Laravel’s HTTP Client or Guzzle, including the request URL, method, headers, and response.
+
