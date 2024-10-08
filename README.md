@@ -20,7 +20,7 @@ The API consists of 3 main endpoints:
 2. Staff Retrieval
 3. Staff Update
 
-## Installation
+## Installation (Test Environment)
 1. Host machine should have the following tools already installed and fully functional:
 * [Docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
 * [Docker Compose](https://docs.docker.com/desktop/install/linux/ubuntu/)
@@ -65,4 +65,137 @@ DB_PASSWORD=database_password
 9. Refer to the following API documentation below on how to configure the endpoint parameters in an HTTP client
    https://documenter.getpostman.com/view/7693053/2sAXxP8s6w
 
+
+## Deployment (Production Environment)
+### 1. Prerequisites
+Ensure you have the following in place:
+
+* **Production Server**: A Linux-based server (e.g., DigitalOcean, AWS, etc.) with SSH access.
+* **Domain**: A domain name pointing to your server.
+* **GitHub** Repository: Your Laravel application hosted in a GitHub repository.
+* **Docker and Docker Compose**: Installed on the production server.
+* **SSH Keys**: Set up for GitHub access to clone private repositories.
+
+### 2. Step-by-Step Deployment Guide
+#### 2.1. Server Setup
+##### SSH into your production server:
+``ssh user@your-server-ip
+``
+
+#### Update your server: Ensure the server is up-to-date before installing Docker.
+``sudo apt update && sudo apt upgrade -y
+``
+#### Install Docker: Follow the Docker installation instructions based on your distribution. On Ubuntu, you can use:
+``sudo apt install docker.io
+``
+
+#### Install Docker Compose: Docker Compose is essential for managing multi-container Docker applications.
+``sudo apt install docker-compose
+``
+
+#### Set up a non-root user to manage Docker (optional but recommended):
+``sudo usermod -aG docker $USER
+``
+#### 2.2. Clone the Laravel Application from GitHub
+#### 1. Navigate to your project directory:
+``cd /var/www
+``
+
+#### 2. Clone your Laravel project from GitHub:
+``git clone https://github.com/AlbertBuluma/HRMS-Web-app.git`` \
+``cd HRMS-Web-app``
+
+#### 2.3 Docker Setup for Laravel
+#### 1. Publish the Sail Docker files (if you haven't already): If you are using Laravel Sail, you need to publish the Docker configuration files by running:
+``sail artisan sail:publish
+``
+#### 2. This will generate a docker directory in your project containing Dockerfiles for various environments.
+Example docker-compose.yml for production:
+```
+version: '3'
+services:
+  laravel.test:
+    build:
+      context: .
+      dockerfile: docker/8.0/Dockerfile
+    image: laravel-app
+    ports:
+      - '80:80'
+    environment:
+      - APP_ENV=production
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=your-database-name
+      - DB_USERNAME=your-database-username
+      - DB_PASSWORD=your-database-password
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - app-network
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root-password
+      MYSQL_DATABASE: your-database-name
+      MYSQL_USER: your-database-username
+      MYSQL_PASSWORD: your-database-password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+volumes:
+  mysql-data:
+networks:
+  app-network:
+```
+
+#### 3. Customize the Dockerfile: If needed, customize the docker/8.0/Dockerfile for additional packages or configurations.
+Example customization in the Dockerfile:
+```
+FROM sail-8.0/app
+
+RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+WORKDIR /var/www/html
+```
+
+#### 2.4 Environment Configuration
+Copy the .env.example file to .env: \
+``cp .env.example .env
+``
+#### Update the .env file for production:
+``nano .env
+`` \
+
+Update the following values for your production environment:
+```
+APP_ENV=production
+APP_DEBUG=false
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_DATABASE=your-database-name
+DB_USERNAME=your-database-username
+DB_PASSWORD=your-database-password
+```
+#### 2.5 Build and Start the Containers
+1. Build the Docker images: Run the following command to build the images specified in the docker-compose.yml file: \
+   ``docker-compose build
+   ``
+2. Start the containers: Start the Laravel application and other services (like MySQL) using: \
+   ``docker-compose up -d
+   ``
+3. Run database migrations inside the Laravel container: Access the running container and run the migrations:
+   ``docker-compose exec laravel.test bash `` \
+   ``php artisan migrate --force``
+
+4. Generate the application key: Still inside the container, run:
+   ``php artisan key:generate
+   ``
 
