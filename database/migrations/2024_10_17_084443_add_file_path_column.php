@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('staff', function (Blueprint $table) {
-            //
+            $table->longText('file_path')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('staff', function (Blueprint $table) {
-            $table->longText('file_path')->nullable();
+        Schema::table('staff', function($table) {
+            $table->dropColumn('file_path');
         });
     }
 };
