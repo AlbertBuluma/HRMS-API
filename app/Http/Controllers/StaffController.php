@@ -8,6 +8,7 @@ use App\Models\Staff;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StaffController extends Controller
 {
@@ -42,6 +43,7 @@ class StaffController extends Controller
             'other_name' => $request->other_name,
             'date_of_birth' => $request->date_of_birth,
             'id_photo' => $request->id_photo? base64_encode($request->id_photo) : null,
+            'file_path' => Storage::get($request->id_photo)
         ]);
 
         return new StaffResource($staff);

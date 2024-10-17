@@ -21,6 +21,7 @@ class StaffResource extends JsonResource
                 'other_name' => $this->other_name,
                 'date_of_birth' => $this->date_of_birth,
                 'id_photo' => $this->id_photo,
+                'file_path' => $this->file_path,
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at
             ],

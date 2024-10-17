@@ -11,7 +11,7 @@ class Staff extends Model
 
     protected $table = 'staff';
     protected $fillable = [
-        'user_id', 'surname', 'other_name', 'date_of_birth', 'id_photo'
+        'user_id', 'surname', 'other_name', 'date_of_birth', 'id_photo', 'file_path'
     ];
 
     public function user()
